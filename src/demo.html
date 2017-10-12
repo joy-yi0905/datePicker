@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>datePicker-demo</title>
+<style>
+p {
+  padding-top: 50px;
+}
+input[type="text"] {
+    width: 200px;
+    padding: 5px;
+    border: 1px solid #ccc;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <p><input type="text" class="input-date" placeholder="请选择日期" /></p>
+
+  <p><input type="text" class="input-date-time" placeholder="请选择日期时间 隐藏title" /></p>
+
+  <p><input type="text" class="input-date-custom" placeholder="默认日期为 2015-05-01" /></p>
+
+</div>
+
+<script>
+
+
+$('.input-date').datePicker({
+  yearCols: [2015, 2016, 2017, 2018],
+  callback: (res) => {
+    console.log(res);
+  }
+});
+
+$('.input-date-time').datePicker({
+  titleDisplay: false,
+  type: 'date-time'
+});
+
+$('.input-date-custom').datePicker({
+  date: '2015-05-01'
+});
+
+
+</script>
+</body>
+
+</html>
