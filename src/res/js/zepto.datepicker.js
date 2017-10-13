@@ -16,7 +16,7 @@ import './../css/zepto.datepicker.less';
     minuteCols: createDateItem('minute')
   };
 
-  let now = new Date();
+  const now = new Date();
 
   let dateGroup = {
     now: {
@@ -79,7 +79,7 @@ import './../css/zepto.datepicker.less';
 
     nowMonth = new Date(year + '/' + parseInt(month) + '/' + 1);
 
-    if (month === 12) { // year increase: 2013-12 -> 2013-01
+    if (month === 12) { // year increase: 2013-12 -> 2014-01
       year += 1;
       month = 0;
     }
