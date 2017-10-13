@@ -300,7 +300,7 @@ import './../css/zepto.datepicker.less';
     setPickerGroupPos: (datePickerEle, index, dateItem, env) => {
       datePickerEle.find('.col').eq(index).find('.picker-item').each((index, item) => {
         if ($(item).html() === dateItem) {
-          env.setPickerGroupAttr($(item).parent(), -(index - 2)*32);
+          env.setPickerGroupAttr($(item).parent(), -(index - 2)*40);
         }
       });
     },
@@ -362,7 +362,7 @@ import './../css/zepto.datepicker.less';
       let DDpickerGroup = DDpickerCol.find('.picker-group');
       let DDpickerItem = DDpickerCol.find('.picker-item');
 
-      let maxBottomMoveOffset = -(days - 3) * 32;
+      let maxBottomMoveOffset = -(days - 3) * 40;
 
       let eleOffsetY = DDpickerGroup.data('offset-y');
 
@@ -420,8 +420,8 @@ import './../css/zepto.datepicker.less';
       let pickerItem = ele.find('.picker-item');
       let eleOffsetY = pickerGroup.data('offset-y') || 0;
 
-      let maxTopMoveOffset = 2 * 32,
-        maxBottomMoveOffset = -(pickerItem.length - 3) * 32;
+      let maxTopMoveOffset = 2 * 40,
+        maxBottomMoveOffset = -(pickerItem.length - 3) * 40;
 
       let index = 0;
 
@@ -435,11 +435,11 @@ import './../css/zepto.datepicker.less';
         eleOffsetY = maxBottomMoveOffset;
       } else {
         if (eleOffsetY >= 0) { // swipe down
-          index = 2 - Math.round(Math.abs(eleOffsetY) / 32);
-          eleOffsetY = (2 - index) * 32;
+          index = 2 - Math.round(Math.abs(eleOffsetY) / 40);
+          eleOffsetY = (2 - index) * 40;
         } else { // swipe up
-          index = Math.round(Math.abs(eleOffsetY) / 32) + 2;
-          eleOffsetY = -(index - 2) * 32;
+          index = Math.round(Math.abs(eleOffsetY) / 40) + 2;
+          eleOffsetY = -(index - 2) * 40;
         }
       }
 
