@@ -2,11 +2,24 @@ import './../css/zepto.datepicker.less';
 
 ;(function($) {
 
-  let picker = {
+  const isSupportTouch = (function() {
+    return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
+  })();
+
+  const eventStart = isSupportTouch ? 'touchstart' : 'mousedown',
+    eventMove = isSupportTouch ? 'touchmove' : 'mousemove',
+    eventEnd = isSupportTouch ? 'touchend' : 'mouseup',
+    eventCancel = 'touchcancel';
+
+  const now = new Date();
+
+  const picker = {
     id: '',
     display: false,
     datePickerEleClass: '.date-picker',
     contentColClass: '.col',
+    contentPickerItemH: 40,
+    contentPickerItemShowNum: 5,
     dateFormatStr: 'YYYY-MM-DD-hh-mm',
 
     yearCols: createDateItem('year'),
@@ -16,9 +29,7 @@ import './../css/zepto.datepicker.less';
     minuteCols: createDateItem('minute')
   };
 
-  let now = new Date();
-
-  let dateGroup = {
+  const dateGroup = {
     now: {
       YYYY: padZero(now.getFullYear(), 4),
       MM: padZero(now.getMonth() + 1),
@@ -36,22 +47,13 @@ import './../css/zepto.datepicker.less';
     }
   };
 
-  let drag = {
+  const drag = {
     start: 0,
     offset: 0,
     end: 0,
     eleOffsetY: 0,
     doing: false
   };
-
-  let isSupportTouch = (function() {
-    return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
-  })();
-
-  let eventStart = isSupportTouch ? 'touchstart' : 'mousedown',
-    eventMove = isSupportTouch ? 'touchmove' : 'mousemove',
-    eventEnd = isSupportTouch ? 'touchend' : 'mouseup',
-    eventCancel = 'touchcancel';
 
   function padZero(str, digit) {
 
@@ -62,10 +64,9 @@ import './../css/zepto.datepicker.less';
     return '' + str;
   }
 
-  function eleIsView(ele) {
-    let screenH = $(window).height();
-    let coverH = 196;
-    let eleBottom = ele.get(0).getBoundingClientRect().bottom;
+  function eleIsView(ele, coverH) {
+    const screenH = $(window).height();
+    const eleBottom = ele.get(0).getBoundingClientRect().bottom;
 
     return !(screenH - eleBottom < coverH + 10);
   }
@@ -79,7 +80,7 @@ import './../css/zepto.datepicker.less';
 
     nowMonth = new Date(year + '/' + parseInt(month) + '/' + 1);
 
-    if (month === 12) { // year increase: 2013-12 -> 2013-01
+    if (month === 12) { // year increase: 2013-12 -> 2014-01
       year += 1;
       month = 0;
     }
@@ -218,7 +219,7 @@ import './../css/zepto.datepicker.less';
 
       datePickerEle
       .removeClass('top bottom')
-      .addClass(!eleIsView(input) ? 'top' : 'bottom')
+      .addClass(!eleIsView(input, 196) ? 'top' : 'bottom')
       .data('id', pickerId)
       .on(eventStart, () => {
         return false;
@@ -294,13 +295,17 @@ import './../css/zepto.datepicker.less';
         pickerContentColHtml += `</div></div>`;
       });
 
-      datePickerEle.find('.date-picker-content .col-group').html(pickerContentColHtml);
+      datePickerEle
+      .find('.date-picker-content')
+      .height(picker.contentPickerItemShowNum * picker.contentPickerItemH)
+      .find('.col-group')
+      .html(pickerContentColHtml);
     },
 
     setPickerGroupPos: (datePickerEle, index, dateItem, env) => {
       datePickerEle.find('.col').eq(index).find('.picker-item').each((index, item) => {
         if ($(item).html() === dateItem) {
-          env.setPickerGroupAttr($(item).parent(), -(index - 2)*32);
+          env.setPickerGroupAttr($(item).parent(), -(index - Math.floor(picker.contentPickerItemShowNum / 2))*picker.contentPickerItemH);
         }
       });
     },
@@ -362,7 +367,7 @@ import './../css/zepto.datepicker.less';
       let DDpickerGroup = DDpickerCol.find('.picker-group');
       let DDpickerItem = DDpickerCol.find('.picker-item');
 
-      let maxBottomMoveOffset = -(days - 3) * 32;
+      let maxBottomMoveOffset = -(days - 3) * picker.contentPickerItemH;
 
       let eleOffsetY = DDpickerGroup.data('offset-y');
 
@@ -420,8 +425,8 @@ import './../css/zepto.datepicker.less';
       let pickerItem = ele.find('.picker-item');
       let eleOffsetY = pickerGroup.data('offset-y') || 0;
 
-      let maxTopMoveOffset = 2 * 32,
-        maxBottomMoveOffset = -(pickerItem.length - 3) * 32;
+      let maxTopMoveOffset = Math.floor(picker.contentPickerItemShowNum / 2) * picker.contentPickerItemH,
+        maxBottomMoveOffset = -(pickerItem.length - (Math.floor(picker.contentPickerItemShowNum / 2) + 1)) * picker.contentPickerItemH;
 
       let index = 0;
 
@@ -435,11 +440,11 @@ import './../css/zepto.datepicker.less';
         eleOffsetY = maxBottomMoveOffset;
       } else {
         if (eleOffsetY >= 0) { // swipe down
-          index = 2 - Math.round(Math.abs(eleOffsetY) / 32);
-          eleOffsetY = (2 - index) * 32;
+          index = Math.floor(picker.contentPickerItemShowNum / 2) - Math.round(Math.abs(eleOffsetY) / picker.contentPickerItemH);
+          eleOffsetY = (Math.floor(picker.contentPickerItemShowNum / 2) - index) * picker.contentPickerItemH;
         } else { // swipe up
-          index = Math.round(Math.abs(eleOffsetY) / 32) + 2;
-          eleOffsetY = -(index - 2) * 32;
+          index = Math.round(Math.abs(eleOffsetY) / picker.contentPickerItemH) + Math.floor(picker.contentPickerItemShowNum / 2);
+          eleOffsetY = -(index - Math.floor(picker.contentPickerItemShowNum / 2)) * picker.contentPickerItemH;
         }
       }
 
