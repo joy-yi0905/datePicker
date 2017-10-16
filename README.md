@@ -52,11 +52,13 @@ datePicker 相关参数配置如下：
 |----------|----------|------------|----------|
 | type | 日期类型 | `date` | 字符串，你也可设置 `date-time`，表示包含时分 |
 | date | 初始日期 | 当前时间 | YYYY-MM-DD hh:ss |
-| titleDisplay | 是否显示头部 | true | 布尔值 |
 | yearCols | 可选的年份 | [2000, ..., 2030] | 数组 |
 | monthCols | 可选的月份 | [01, ..., 12] | 数组 |
 | dayCols | 可选择的天 | [01, ..., 31] | 数组 |
 | hourCols | 可选择的小时 | [00, ..., 23] | 数组 |
 | minuteCols | 可选择的分钟 | [00, ..., 59] | 数组 |
+| titleDisplay | 是否显示头部 | true | 布尔值 |
+| contentPickerItemH | 日期行高 | 40 | 数字 |
+| contentPickerItemShowNum | 日期显示行数，必须为奇数 | 5 | 数字 |
 | callback | 每次选择后的回调 | 空函数 | 参数为选择后的日期 |
 
