@@ -373,7 +373,7 @@ import './../css/zepto.datepicker.less';
       let DDpickerGroup = DDpickerCol.find('.picker-group');
       let DDpickerItem = DDpickerCol.find('.picker-item');
 
-      let maxBottomMoveOffset = -(days - 3) * this.opts.contentPickerItemH;
+      let maxBottomMoveOffset = -(days - (Math.floor(this.opts.contentPickerItemShowNum / 2) + 1)) * this.opts.contentPickerItemH;
 
       let eleOffsetY = DDpickerGroup.data('offset-y');
 
