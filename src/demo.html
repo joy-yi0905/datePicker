@@ -23,9 +23,9 @@ input[type="text"] {
 
   <p><input type="text" class="input-date" placeholder="请选择日期 自定义年份数" /></p>
 
-  <p><input type="text" class="input-date-time" placeholder="请选择日期时间 隐藏头部" /></p>
+  <p><input type="text" class="input-date-time" placeholder="请选择日期时间 隐藏头部 " /></p>
 
-  <p><input type="text" class="input-date-custom" placeholder="默认日期为 2015-05-01" /></p>
+  <p><input type="text" class="input-date-custom" placeholder="默认日期为 2015-05-01 显示3行" /></p>
 
 </div>
 
@@ -45,7 +45,8 @@ $('.input-date-time').datePicker({
 });
 
 $('.input-date-custom').datePicker({
-  date: '2015-05-01'
+  date: '2015-05-01',
+  contentPickerItemShowNum: 3
 });
 
 

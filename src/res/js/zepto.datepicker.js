@@ -143,6 +143,8 @@ import './../css/zepto.datepicker.less';
       dayCols: picker.dayCols,
       hourCols: picker.hourCols,
       minuteCols: picker.minuteCols,
+      contentPickerItemH: picker.contentPickerItemH,
+      contentPickerItemShowNum: picker.contentPickerItemShowNum,
       titleDisplay: true,
       callback: () => {}
     }) {
@@ -175,6 +177,10 @@ import './../css/zepto.datepicker.less';
 
       let defaultDateArr = [],
         defaultDateColArr = [];
+
+      if (env.opts.contentPickerItemShowNum % 2 === 0) {
+        return alert('显示行数必须为奇数！');
+      }
 
       env.setInputVal(); // set input value
 
@@ -282,7 +288,7 @@ import './../css/zepto.datepicker.less';
       datePickerEle.find('.date-picker-title .col-group').html(pickerTitleColHtml);
     },
 
-    createPickerContentCol: (datePickerEle, colClass, pickerTitleColArr, pickerContentColArr) => {
+    createPickerContentCol: function(datePickerEle, colClass, pickerTitleColArr, pickerContentColArr) {
       let pickerContentColHtml = '';
 
       $.each(pickerContentColArr, (index, item) => {
@@ -297,15 +303,15 @@ import './../css/zepto.datepicker.less';
 
       datePickerEle
       .find('.date-picker-content')
-      .height(picker.contentPickerItemShowNum * picker.contentPickerItemH)
+      .height(this.opts.contentPickerItemShowNum * this.opts.contentPickerItemH)
       .find('.col-group')
       .html(pickerContentColHtml);
     },
 
-    setPickerGroupPos: (datePickerEle, index, dateItem, env) => {
+    setPickerGroupPos: function(datePickerEle, index, dateItem, env) {
       datePickerEle.find('.col').eq(index).find('.picker-item').each((index, item) => {
         if ($(item).html() === dateItem) {
-          env.setPickerGroupAttr($(item).parent(), -(index - Math.floor(picker.contentPickerItemShowNum / 2))*picker.contentPickerItemH);
+          env.setPickerGroupAttr($(item).parent(), -(index - Math.floor(this.opts.contentPickerItemShowNum / 2))*this.opts.contentPickerItemH);
         }
       });
     },
@@ -367,7 +373,7 @@ import './../css/zepto.datepicker.less';
       let DDpickerGroup = DDpickerCol.find('.picker-group');
       let DDpickerItem = DDpickerCol.find('.picker-item');
 
-      let maxBottomMoveOffset = -(days - 3) * picker.contentPickerItemH;
+      let maxBottomMoveOffset = -(days - 3) * this.opts.contentPickerItemH;
 
       let eleOffsetY = DDpickerGroup.data('offset-y');
 
@@ -425,8 +431,10 @@ import './../css/zepto.datepicker.less';
       let pickerItem = ele.find('.picker-item');
       let eleOffsetY = pickerGroup.data('offset-y') || 0;
 
-      let maxTopMoveOffset = Math.floor(picker.contentPickerItemShowNum / 2) * picker.contentPickerItemH,
-        maxBottomMoveOffset = -(pickerItem.length - (Math.floor(picker.contentPickerItemShowNum / 2) + 1)) * picker.contentPickerItemH;
+      let {contentPickerItemH, contentPickerItemShowNum} = this.opts;
+
+      let maxTopMoveOffset = Math.floor(contentPickerItemShowNum / 2) * contentPickerItemH,
+        maxBottomMoveOffset = -(pickerItem.length - (Math.floor(contentPickerItemShowNum / 2) + 1)) * contentPickerItemH;
 
       let index = 0;
 
@@ -440,11 +448,11 @@ import './../css/zepto.datepicker.less';
         eleOffsetY = maxBottomMoveOffset;
       } else {
         if (eleOffsetY >= 0) { // swipe down
-          index = Math.floor(picker.contentPickerItemShowNum / 2) - Math.round(Math.abs(eleOffsetY) / picker.contentPickerItemH);
-          eleOffsetY = (Math.floor(picker.contentPickerItemShowNum / 2) - index) * picker.contentPickerItemH;
+          index = Math.floor(contentPickerItemShowNum / 2) - Math.round(Math.abs(eleOffsetY) / contentPickerItemH);
+          eleOffsetY = (Math.floor(contentPickerItemShowNum / 2) - index) * contentPickerItemH;
         } else { // swipe up
-          index = Math.round(Math.abs(eleOffsetY) / picker.contentPickerItemH) + Math.floor(picker.contentPickerItemShowNum / 2);
-          eleOffsetY = -(index - Math.floor(picker.contentPickerItemShowNum / 2)) * picker.contentPickerItemH;
+          index = Math.round(Math.abs(eleOffsetY) / contentPickerItemH) + Math.floor(contentPickerItemShowNum / 2);
+          eleOffsetY = -(index - Math.floor(contentPickerItemShowNum / 2)) * contentPickerItemH;
         }
       }
 
