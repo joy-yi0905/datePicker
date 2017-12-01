@@ -9,14 +9,14 @@ datePicker演示：**[demo](http://joy-yi0905.github.io/datePicker/demo/demo.htm
 - 首先引入插件的样式 `zepto.datepicker.min.css`
 
 ```html
-<link rel="stylesheet" href="src/zepto.datepicker.min.css">
+<link rel="stylesheet" href="zepto.datepicker.min.css">
 ```
 
 - 然后再引入 `zepto.min.js` 和 `zepto.datepicker.min.js`（demo目录已压缩）
 
 ```html
-<script src="src/zepto.min.js"></script>
-<script src="src/zepto.datepicker.min.js"></script>
+<script src="zepto.min.js"></script>
+<script src="zepto.datepicker.min.js"></script>
 ```
 
 - 最后在页面里，为需要的 `<input>` 元素添加方法。 相关示例代码：

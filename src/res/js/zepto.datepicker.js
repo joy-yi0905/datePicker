@@ -152,18 +152,19 @@ import './../css/zepto.datepicker.less';
     this.input = input;
     this.opts = $.extend({}, defaults, options);
 
-    this.showPicker(this);
+    this.showPicker();
   }
 
   $.extend(DatePicker.prototype, {
-    showPicker: (env) => { console.log(env);
+    showPicker() {
+      const that = this;
 
-      let input = env.input,
+      let input = that.input,
         inputId = input.data('id');
 
       let datePickerEle;
 
-      let {type, titleDisplay, yearCols, monthCols, dayCols, hourCols, minuteCols} = env.opts;
+      let {type, titleDisplay, yearCols, monthCols, dayCols, hourCols, minuteCols} = that.opts;
 
       let colClass = 'col-' + (type === 'date' ? '33' : '20');
 
@@ -178,11 +179,11 @@ import './../css/zepto.datepicker.less';
       let defaultDateArr = [],
         defaultDateColArr = [];
 
-      if (env.opts.contentPickerItemShowNum % 2 === 0) {
+      if (that.opts.contentPickerItemShowNum % 2 === 0) {
         return alert('显示行数必须为奇数！');
       }
 
-      env.setInputVal(); // set input value
+      that.setInputVal(); // set input value
 
       defaultDateArr = input.val().split(' ');
 
@@ -196,7 +197,7 @@ import './../css/zepto.datepicker.less';
         } else {
           isSwitchInput = true;
 
-          env.hidePicker($(picker.datePickerEleClass));
+          that.hidePicker($(picker.datePickerEleClass));
 
           datePickerEle = createPicker();
         }
@@ -215,12 +216,12 @@ import './../css/zepto.datepicker.less';
         pickerTitleColArr.length = pickerContentColArr.length = defaultDateColArr.length = 3;
       }
 
-      titleDisplay && env.createPickerTitleCol(datePickerEle, colClass, pickerTitleColArr);
+      titleDisplay && that.createPickerTitleCol(datePickerEle, colClass, pickerTitleColArr);
 
-      env.createPickerContentCol(datePickerEle, colClass, pickerTitleColArr, pickerContentColArr);
+      that.createPickerContentCol(datePickerEle, colClass, pickerTitleColArr, pickerContentColArr);
 
       $.each(defaultDateColArr, (index, item) => {
-        env.setPickerGroupPos(datePickerEle, index, item, env);
+        that.setPickerGroupPos(datePickerEle, index, item, that);
       });
 
       datePickerEle
@@ -237,7 +238,7 @@ import './../css/zepto.datepicker.less';
         $(document).off();
 
         $(document).on(eventStart, () => {
-          env.hidePicker(datePickerEle);
+          that.hidePicker(datePickerEle);
         });
       }, 10);
 
@@ -246,26 +247,26 @@ import './../css/zepto.datepicker.less';
       datePickerEle.find(picker.contentColClass).on(eventStart, function(e) {
         dragPickerCol = $(this);
 
-        env.handleStart(e, dragPickerCol);
+        that.handleStart(e, dragPickerCol);
 
         $(document).off();
 
         $(document).on(eventStart, () => {
-          env.hidePicker(datePickerEle);
+          that.hidePicker(datePickerEle);
         });
 
         $(document).on(eventMove, function(e) {
-          env.handleMove(e, dragPickerCol);
+          that.handleMove(e, dragPickerCol);
         });
 
         $(document).on(eventEnd, function(e) {
-          env.handleEnd(e, dragPickerCol);
+          that.handleEnd(e, dragPickerCol);
         });
       });
 
     },
 
-    hidePicker: function(datePickerEle) {
+    hidePicker(datePickerEle) {
 
       picker.display = false;
 
@@ -278,7 +279,7 @@ import './../css/zepto.datepicker.less';
       }, 400);
     },
 
-    createPickerTitleCol: (datePickerEle, colClass, pickerTitleColArr) => {
+    createPickerTitleCol(datePickerEle, colClass, pickerTitleColArr) {
       let pickerTitleColHtml = '';
 
       $.each(pickerTitleColArr, (index, item) => {
@@ -288,7 +289,7 @@ import './../css/zepto.datepicker.less';
       datePickerEle.find('.date-picker-title .col-group').html(pickerTitleColHtml);
     },
 
-    createPickerContentCol: function(datePickerEle, colClass, pickerTitleColArr, pickerContentColArr) {
+    createPickerContentCol(datePickerEle, colClass, pickerTitleColArr, pickerContentColArr) {
       let pickerContentColHtml = '';
 
       $.each(pickerContentColArr, (index, item) => {
@@ -308,15 +309,15 @@ import './../css/zepto.datepicker.less';
       .html(pickerContentColHtml);
     },
 
-    setPickerGroupPos: function(datePickerEle, index, dateItem, env) {
+    setPickerGroupPos(datePickerEle, index, dateItem) {
       datePickerEle.find('.col').eq(index).find('.picker-item').each((index, item) => {
         if ($(item).html() === dateItem) {
-          env.setPickerGroupAttr($(item).parent(), -(index - Math.floor(this.opts.contentPickerItemShowNum / 2))*this.opts.contentPickerItemH);
+          this.setPickerGroupAttr($(item).parent(), -(index - Math.floor(this.opts.contentPickerItemShowNum / 2))*this.opts.contentPickerItemH);
         }
       });
     },
 
-    setPickerGroupAttr: (pickerGroup, eleOffsetY) => {
+    setPickerGroupAttr(pickerGroup, eleOffsetY) {
       pickerGroup.css({
         '-webkit-transform': `translateY(${eleOffsetY}px)`,
         'transform': `translateY(${eleOffsetY}px)`
@@ -324,7 +325,7 @@ import './../css/zepto.datepicker.less';
       .data('offsetY', `${eleOffsetY}`);
     },
 
-    setInputVal: function(isSelect) {
+    setInputVal(isSelect) {
 
       let input = this.input,
         inputVal = '';
@@ -366,7 +367,7 @@ import './../css/zepto.datepicker.less';
       this.opts.callback(inputVal);
     },
 
-    updateMonthDays: function(year, month) {
+    updateMonthDays(year, month) {
       let days = getMonthDays(year, month);
 
       let DDpickerCol = $('.date-picker .col').eq(2);
@@ -398,7 +399,7 @@ import './../css/zepto.datepicker.less';
       }
     },
 
-    handleStart: function(e, ele) {
+    handleStart(e, ele) {
 
       if (!isSupportTouch) drag.doing = true;
 
@@ -408,7 +409,7 @@ import './../css/zepto.datepicker.less';
       drag.eleOffsetY = pickerGroup.data('offset-y') || 0;
     },
 
-    handleMove: function(e, ele) {
+    handleMove(e, ele) {
 
       if (!ele) return;
 
@@ -423,7 +424,7 @@ import './../css/zepto.datepicker.less';
       this.setPickerGroupAttr(pickerGroup, moveOffset);
     },
 
-    handleEnd: function(e, ele) {
+    handleEnd(e, ele) {
 
       if (!ele) return;
 
