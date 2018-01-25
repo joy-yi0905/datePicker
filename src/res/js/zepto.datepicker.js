@@ -327,6 +327,8 @@ import './../css/zepto.datepicker.less';
 
     setInputVal(isSelect) {
 
+      let dateRegExp = /^\d{4}(-\d{2}){2}( \d{2}:\d{2})?$/;
+
       let input = this.input,
         inputVal = '';
 
@@ -338,8 +340,9 @@ import './../css/zepto.datepicker.less';
         if (type === 'date-time') {
           inputVal += ' ' + dateGroup.select.hh + ':' + dateGroup.select.mm;
         }
+
       } else {
-        if (input.val()) {
+        if (input.val() && dateRegExp.test(input.val())) {
           inputVal = input.val();
         } else {
           inputVal = date;
