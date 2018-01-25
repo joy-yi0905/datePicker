@@ -2,6 +2,8 @@ import './../css/zepto.datepicker.less';
 
 ;(function($) {
 
+  const dateRegExp = /^\d{4}(-\d{2}){2}( \d{2}:\d{2})?$/;
+
   const isSupportTouch = (function() {
     return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
   })();
@@ -39,11 +41,11 @@ import './../css/zepto.datepicker.less';
     },
 
     select: {
-      YYYY: '',
-      MM: '',
-      DD: '',
-      hh: '',
-      mm: ''
+      YYYY: padZero(now.getFullYear(), 4),
+      MM: padZero(now.getMonth() + 1),
+      DD: padZero(now.getDate()),
+      hh: padZero(now.getHours()),
+      mm: padZero(now.getMinutes()),
     }
   };
 
@@ -69,6 +71,30 @@ import './../css/zepto.datepicker.less';
     const eleBottom = ele.get(0).getBoundingClientRect().bottom;
 
     return !(screenH - eleBottom < coverH + 10);
+  }
+
+  function createMask (){
+    let maskEle = $('<div class="pop-mask">');
+
+    $('.pop-mask').remove();
+
+    maskEle.appendTo('body');
+  }
+
+  function showMask (isTransparent){
+    createMask();
+
+    setTimeout(() => {
+      $('.pop-mask').addClass(isTransparent ? 'pop-mask-in pop-mask-transparent' : 'pop-mask-in');
+    }, 0);
+  }
+
+  function hideMask (isDelay) {
+    $('.pop-mask').removeClass('pop-mask-in pop-mask-transparent');
+
+    setTimeout(() => {
+      $('.pop-mask').remove();
+    }, isDelay ? 0 : 300);
   }
 
   function getMonthDays(year, month) {
@@ -119,7 +145,11 @@ import './../css/zepto.datepicker.less';
 
     datePickerEle
     .html(
-      `<div class="date-picker-title">
+      `<div class="date-picker-toolbar">
+        <a class="cancel" href="javascript:;">取消</a>
+        <a class="confirm" href="javascript:;">确认</a>
+      </div>
+      <div class="date-picker-title">
         <div class="col-group"></div>
       </div>
       <div class="date-picker-content">
@@ -162,9 +192,11 @@ import './../css/zepto.datepicker.less';
       let input = that.input,
         inputId = input.data('id');
 
+      let inputVal = '';
+
       let datePickerEle;
 
-      let {type, titleDisplay, yearCols, monthCols, dayCols, hourCols, minuteCols} = that.opts;
+      let {type, titleDisplay, yearCols, monthCols, dayCols, hourCols, minuteCols, date} = that.opts;
 
       let colClass = 'col-' + (type === 'date' ? '33' : '20');
 
@@ -183,13 +215,21 @@ import './../css/zepto.datepicker.less';
         return alert('显示行数必须为奇数！');
       }
 
-      that.setInputVal(); // set input value
+      showMask();
 
-      defaultDateArr = input.val().split(' ');
+      if (input.val() && dateRegExp.test(input.val())) {
+        inputVal = input.val();
+      } else {
+        inputVal = date;
+      }
+
+      defaultDateArr = inputVal.split(' ');
 
       defaultDateColArr = defaultDateArr[1] ?
         defaultDateArr[0].split('-').concat(defaultDateArr[1].split(':')) :
         defaultDateArr[0].split('-');
+
+      this.setSelectDate(defaultDateColArr);
 
       if (picker.display) {
         if (inputId === picker.id) { // same input
@@ -264,6 +304,18 @@ import './../css/zepto.datepicker.less';
         });
       });
 
+      let datePickerCancel = datePickerEle.find('.cancel'),
+        datePickerConfirm = datePickerEle.find('.confirm');
+
+      datePickerCancel.on(eventStart, () => {
+        this.hidePicker(datePickerEle);
+      });
+
+      datePickerConfirm.on(eventStart, () => {
+        this.setInputVal(true);
+        this.hidePicker(datePickerEle);
+      });
+
     },
 
     hidePicker(datePickerEle) {
@@ -273,6 +325,8 @@ import './../css/zepto.datepicker.less';
       $('input[data-type="date-picker"]').removeClass('focus');
 
       datePickerEle.removeClass('in');
+
+      hideMask();
 
       setTimeout(() => {
         datePickerEle.remove();
@@ -327,8 +381,6 @@ import './../css/zepto.datepicker.less';
 
     setInputVal(isSelect) {
 
-      let dateRegExp = /^\d{4}(-\d{2}){2}( \d{2}:\d{2})?$/;
-
       let input = this.input,
         inputVal = '';
 
@@ -340,6 +392,10 @@ import './../css/zepto.datepicker.less';
         if (type === 'date-time') {
           inputVal += ' ' + dateGroup.select.hh + ':' + dateGroup.select.mm;
         }
+
+        input.val(inputVal);
+
+        this.opts.callback(inputVal);
 
       } else {
         if (input.val() && dateRegExp.test(input.val())) {
@@ -358,16 +414,16 @@ import './../css/zepto.datepicker.less';
           dateArr = dateArr[0].split('-').concat(dateArr[1].split(':'));
         }
 
-        dateGroup.select.YYYY = dateArr[0];
-        dateGroup.select.MM = dateArr[1];
-        dateGroup.select.DD = dateArr[2];
-        dateGroup.select.hh = dateArr[3];
-        dateGroup.select.mm = dateArr[4];
+        this.setSelectDate(dateArr);
       }
+    },
 
-      input.val(inputVal);
-
-      this.opts.callback(inputVal);
+    setSelectDate(dateArr) {
+      dateGroup.select.YYYY = dateArr[0];
+      dateGroup.select.MM = dateArr[1];
+      dateGroup.select.DD = dateArr[2];
+      dateGroup.select.hh = dateArr[3];
+      dateGroup.select.mm = dateArr[4];
     },
 
     updateMonthDays(year, month) {
@@ -475,8 +531,6 @@ import './../css/zepto.datepicker.less';
       if (type === 'YYYY' || type === 'MM') {
         this.updateMonthDays(dateGroup.select.YYYY, dateGroup.select.MM);
       }
-
-      this.setInputVal(true);
     }
   });
 
